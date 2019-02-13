@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 from matplotlib import pyplot as plt
-
+from PIL import Image
 
 
 def get_pixel(img, center, x, y):
@@ -102,6 +102,8 @@ def main():
             #elif(randomnumber[i,j]<128 and encrypted[i,j]>=128):
              #   decrypted[i,j]=encrypted[i,j]
 
+    encrypt_image=Image.fromarray(encrypted)
+    encrypted_image.save("encryptedimage.jpg")
     hist_lbp = cv2.calcHist([img_lbp], [0], None, [256], [0, 256])
     enc_hist_lbp = cv2.calcHist([enc_img_lbp], [0], None, [256], [0, 256])
     output_list = []
