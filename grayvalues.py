@@ -103,7 +103,7 @@ def main():
              #   decrypted[i,j]=encrypted[i,j]
 
     encrypt_image=Image.fromarray(encrypted)
-    encrypted_image.save("encryptedimage.jpg")
+    encrypt_image.save("encryptedimage.jpg")
     hist_lbp = cv2.calcHist([img_lbp], [0], None, [256], [0, 256])
     enc_hist_lbp = cv2.calcHist([enc_img_lbp], [0], None, [256], [0, 256])
     output_list = []
