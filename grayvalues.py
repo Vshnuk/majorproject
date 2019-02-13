@@ -45,6 +45,8 @@ def lbp_calculated_pixel(img, x, y):
     val = 0
     for i in range(len(val_ar)):
         val += val_ar[i] * power_val[i]
+        if(x==0 and y==0):
+            print(val)
     return val    
 
 
@@ -53,59 +55,61 @@ def main():
     img_bgr = cv2.imread(image_file)
     height, width, channel = img_bgr.shape
     img = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
-    #cv2.namedWindow('image',cv2.WINDOW_NORMAL)
-    #cv2.imshow('image',img)
-    #cv2.waitKey(0)
-    #cv2.destroyAllWindows()
+    
     k=img.shape[0]
     l=img.shape[1]
-    print (k)
-    print (l)
+
     original = np.zeros((height, width,3), np.uint8)
     encrypted = np.zeros((height, width,3), np.uint8)
-    #randomnumber = np.zeros((height, width,3), np.uint8)
     decrypted = np.zeros((height, width,3), np.uint8)
     img_lbp = np.zeros((height, width,3), np.uint8)
     enc_img_lbp = np.zeros((height, width,3), np.uint8)
-    #original={}
-    #encrypted={}
+
     randomnumber={}
-    #decrypted={}
-    #img_lbp={}
     for i in range (k):#traverses through height of the image
         for j in range (l): #traverses through width of the image
             original[i,j]=img[i,j]
             randomnumber[i,j]=np.random.randint(0,255)
-            #print(randomnumber[i,j])
             img_lbp[i, j] = lbp_calculated_pixel(img, i, j)
+            
+            # Encryption
+
             if(((randomnumber[i,j]>=128) and (img[i,j]>=128))):
                 encrypted[i,j]=img[i,j]-128
+                temp=img[i,j]-128
             elif(((randomnumber[i,j]<128) and (img[i,j]<128))):
                 encrypted[i,j]=img[i,j]
+                temp=img[i,j]
             elif(((randomnumber[i,j]>=128) and (img[i,j]<128))):
                 encrypted[i,j]=img[i,j]+128
+                temp=img[i,j]+128
             else:
                 encrypted[i,j]=img[i,j]
-            enc_img_lbp[i, j] = lbp_calculated_pixel(img, i, j)
-            #print(img[i,j])
-            #print(original[i,j])
-            #print(encrypted[i,j])
+                temp=img[i,j]
 
+            enc_img_lbp[i, j] = lbp_calculated_pixel(img, i, j)
+            
             # DECRYPTION    
 
-            #if(randomnumber[i,j]<128 and encrypted[i,j]<128):
-             #   decrypted[i,j]=encrypted[i,j]
-           # elif(randomnumber[i,j]>=128 and encrypted[i,j]<128):
-             #   decrypted[i,j]=encrypted[i,j]+128
-           # elif(randomnumber[i,j]>=128 and encrypted[i,j]>=128):
-           #     decrypted[i,j]=encrypted[i,j]-128
-            #elif(randomnumber[i,j]<128 and encrypted[i,j]>=128):
-             #   decrypted[i,j]=encrypted[i,j]
+            if(((randomnumber[i,j]<128) and (temp<128))):
+                decrypted[i,j]=temp
+            elif(((randomnumber[i,j]>=128) and (temp<128))):
+                decrypted[i,j]=temp+128
+            elif(((randomnumber[i,j]>=128) and (temp>=128))):
+                decrypted[i,j]=temp-128
+            elif(((randomnumber[i,j]<128) and (temp>=128))):
+                decrypted[i,j]=temp
+    
+    #saving encrypted image
 
     encrypt_image=Image.fromarray(encrypted)
     encrypt_image.save("encryptedimage.jpg")
+
+    # caluclate histogram and plot it
+
     hist_lbp = cv2.calcHist([img_lbp], [0], None, [256], [0, 256])
     enc_hist_lbp = cv2.calcHist([enc_img_lbp], [0], None, [256], [0, 256])
+
     output_list = []
     output_list.append({
         "img": original,
@@ -123,6 +127,15 @@ def main():
         "xtick": [],
         "ytick": [],
         "title": "Encrypted Image",
+        "type": "gray"  
+    })
+    output_list.append({
+        "img": decrypted,
+        "xlabel": "",
+        "ylabel": "",
+        "xtick": [],
+        "ytick": [],
+        "title": "Decrypted Image",
         "type": "gray"  
     })
     output_list.append({
@@ -161,6 +174,7 @@ def main():
         "title": "EncryptedHistogram(LBP)",
         "type": "histogram"
     })
+
     output_list_len = len(output_list)
     figure = plt.figure()
     for i in range(output_list_len):
@@ -172,7 +186,7 @@ def main():
         current_ytick = current_dict["ytick"]
         current_title = current_dict["title"]
         current_type = current_dict["type"]
-        current_plot = figure.add_subplot(1, output_list_len, i+1)
+        current_plot = figure.add_subplot(2, output_list_len-3,i+1)
         if current_type == "gray":
             current_plot.imshow(current_img, cmap = plt.get_cmap('gray'))
             current_plot.set_title(current_title)
