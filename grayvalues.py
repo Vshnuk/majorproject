@@ -2,6 +2,8 @@ import numpy as np
 import cv2
 from matplotlib import pyplot as plt
 from PIL import Image
+import glob
+
 
 
 def get_pixel(img, center, x, y):
@@ -51,59 +53,60 @@ def lbp_calculated_pixel(img, x, y):
 
 
 def main():
-    image_file = 'newvispic.jpg'
-    img_bgr = cv2.imread(image_file)
-    height, width, channel = img_bgr.shape
-    img = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
-    
-    k=img.shape[0]
-    l=img.shape[1]
+    images=glob.glob("images\\*.jpg")
+    for image_file in images:
+        # image_file = 'newvispic.jpg'
+        img_bgr = cv2.imread(image_file)
+        height, width, channel = img_bgr.shape
+        img = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
+        
+        k=img.shape[0]
+        l=img.shape[1]
 
-    original = np.zeros((height, width,3), np.uint8)
-    encrypted = np.zeros((height, width,3), np.uint8)
-    decrypted = np.zeros((height, width,3), np.uint8)
-    img_lbp = np.zeros((height, width,3), np.uint8)
-    enc_img_lbp = np.zeros((height, width,3), np.uint8)
+        original = np.zeros((height, width,3), np.uint8)
+        encrypted = np.zeros((height, width,3), np.uint8)
+        decrypted = np.zeros((height, width,3), np.uint8)
+        img_lbp = np.zeros((height, width,3), np.uint8)
+        enc_img_lbp = np.zeros((height, width,3), np.uint8)
 
-    randomnumber={}
-    for i in range (k):#traverses through height of the image
-        for j in range (l): #traverses through width of the image
-            original[i,j]=img[i,j]
-            randomnumber[i,j]=np.random.randint(0,255)
-            img_lbp[i, j] = lbp_calculated_pixel(img, i, j)
-            
-            # Encryption
+        randomnumber={}
+        for i in range (k):#traverses through height of the image
+            for j in range (l): #traverses through width of the image
+                original[i,j]=img[i,j]
+                randomnumber[i,j]=np.random.randint(0,255)
+                img_lbp[i, j] = lbp_calculated_pixel(img, i, j)
+                
+                # Encryption
 
-            if(((randomnumber[i,j]>=128) and (img[i,j]>=128))):
-                encrypted[i,j]=img[i,j]-128
-                temp=img[i,j]-128
-            elif(((randomnumber[i,j]<128) and (img[i,j]<128))):
-                encrypted[i,j]=img[i,j]
-                temp=img[i,j]
-            elif(((randomnumber[i,j]>=128) and (img[i,j]<128))):
-                encrypted[i,j]=img[i,j]+128
-                temp=img[i,j]+128
-            else:
-                encrypted[i,j]=img[i,j]
-                temp=img[i,j]
+                if(((randomnumber[i,j]>=128) and (img[i,j]>=128))):
+                    encrypted[i,j]=img[i,j]-128
+                    temp=img[i,j]-128
+                elif(((randomnumber[i,j]<128) and (img[i,j]<128))):
+                    encrypted[i,j]=img[i,j]
+                    temp=img[i,j]
+                elif(((randomnumber[i,j]>=128) and (img[i,j]<128))):
+                    encrypted[i,j]=img[i,j]+128
+                    temp=img[i,j]+128
+                else:
+                    encrypted[i,j]=img[i,j]
+                    temp=img[i,j]
 
-            enc_img_lbp[i, j] = lbp_calculated_pixel(img, i, j)
-            
-            # DECRYPTION    
+                enc_img_lbp[i, j] = lbp_calculated_pixel(img, i, j)
+                
+                # DECRYPTION    
 
-            if(((randomnumber[i,j]<128) and (temp<128))):
-                decrypted[i,j]=temp
-            elif(((randomnumber[i,j]>=128) and (temp<128))):
-                decrypted[i,j]=temp+128
-            elif(((randomnumber[i,j]>=128) and (temp>=128))):
-                decrypted[i,j]=temp-128
-            elif(((randomnumber[i,j]<128) and (temp>=128))):
-                decrypted[i,j]=temp
-    
-    #saving encrypted image
-
-    encrypt_image=Image.fromarray(encrypted)
-    encrypt_image.save("encryptedimage.jpg")
+                if(((randomnumber[i,j]<128) and (temp<128))):
+                    decrypted[i,j]=temp
+                elif(((randomnumber[i,j]>=128) and (temp<128))):
+                    decrypted[i,j]=temp+128
+                elif(((randomnumber[i,j]>=128) and (temp>=128))):
+                    decrypted[i,j]=temp-128
+                elif(((randomnumber[i,j]<128) and (temp>=128))):
+                    decrypted[i,j]=temp
+        
+        #saving encrypted image
+        encrypt_image=Image.fromarray(encrypted)
+        encrypt_image.save("encryptedimages\\"+image_file.split('\\')[1])
 
     # caluclate histogram and plot it
 
