@@ -5,7 +5,7 @@
     {
         if ($_FILES["file"]["error"][0] > 0)
         {
-            // echo "Error: " . $_FILES["file"]["error"][0] . "<br>";
+            echo "Error: " . $_FILES["file"]["error"][0] . "<br>";
         }
         else
         {
@@ -21,7 +21,7 @@
                 if ($tmpFilePath != "")
                 {
                 //Setup our new file path
-                    $newFilePath = "./images/" . $_FILES["file"]["name"][$i];
+                    $newFilePath = "images\\" . $_FILES["file"]["name"][$i];
                     move_uploaded_file($tmpFilePath, $newFilePath);
                 }
             }
@@ -29,8 +29,8 @@
     }
     else if(isset($_POST['run_submit']))
     {
-        echo shell_exec("python grayvalues.py");
-        header("Location: upload.php");
+        shell_exec("python ins.py");
+        //header("Location: upload.php");
     }
     else
     {
@@ -77,6 +77,9 @@
             <h4>Or drag and drop files below</h4>
             <div class="upload-drop-zone" id="drop-zone">
             Just drag and drop files here
+                <div>
+                <i class="fas fa-spinner"></i>
+                </div>
             </div>
 
             <!-- Progress Bar -->

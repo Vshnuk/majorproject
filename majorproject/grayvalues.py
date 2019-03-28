@@ -53,21 +53,20 @@ def lbp_calculated_pixel(img, x, y):
 
 
 def main():
-    images=glob.glob("images/*.jpg")
+    images=glob.glob("uploads\\*.jpg")
     for image_file in images:
         # image_file = 'newvispic.jpg'
         img_bgr = cv2.imread(image_file)
         height, width, channel = img_bgr.shape
         img = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
-        
         k=img.shape[0]
         l=img.shape[1]
 
-        original = np.zeros((height, width,3), np.uint8)
+        # original = np.zeros((height, width,3), np.uint8)
         encrypted = np.zeros((height, width,3), np.uint8)
         decrypted = np.zeros((height, width,3), np.uint8)
-        img_lbp = np.zeros((height, width,3), np.uint8)
-        enc_img_lbp = np.zeros((height, width,3), np.uint8)
+        # img_lbp = np.zeros((height, width,3), np.uint8)
+        # enc_img_lbp = np.zeros((height, width,3), np.uint8)
 
         randomnumber={}
         for i in range (k):#traverses through height of the image
@@ -106,7 +105,9 @@ def main():
         
         #saving encrypted image
         encrypt_image=Image.fromarray(encrypted)
-        encrypt_image.save("encryptedimages/"+image_file.split('/')[1])
+        encrypt_image.save("encryptedimages\\"+image_file.split('\\')[1])
+        encrypt_image=Image.fromarray(decrypted)
+        encrypt_image.save(image_file.split('\\')[1])
 
     # caluclate histogram and plot it
 

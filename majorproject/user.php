@@ -3,13 +3,12 @@
     session_start();
     if(isset($_POST['query_submit']))
     {
-        echo "buttoned";
         if (isset($_FILES['image']['name']) && $_FILES['image']['error']== 0)
         {
 
             
             $tmpFilePath = $_FILES["image"]["tmp_name"];
-            $newFilePath = "./uploads/". $_FILES["image"]["name"];
+            $newFilePath = "uploads/". $_FILES["image"]["name"];
             foreach (new DirectoryIterator('/var/www/html/majorproject/uploads') as $fileInfo) {
                 if(!$fileInfo->isDot()) {
                     unlink($fileInfo->getPathname());
@@ -29,6 +28,11 @@
        {
            echo "unsuccessful";
        }
+    }
+    else if(isset($_POST['query_run']))
+    {
+        echo shell_exec('python /var/www/html/majorproject/search.py');
+        header("Location: result.php");
     }
     else
     {
@@ -70,12 +74,13 @@
                     <div class="form-group">
                         <div class="row">
                         <label class="control-label col-md-2 text-right" for="filename"><span>File</span></label>
-                        <div class="col-md-10">
+                        <div class="col-md-12">
                             <div class="input-group">
                                 <input type="hidden" id="filename" name="filename" value="">
                                 <input type="file" id="uploadedFile" name="image" class="form-control form-control-sm" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
                                 <div class="input-group-btn">
                                     <input type="submit" value="Upload" class="rounded-0 btn btn-primary" name="query_submit">
+                                    <input type="submit" value="Search" class="rounded-0 btn btn-primary" name="query_run">
                                 </div>
                             </div>
                         </div>
